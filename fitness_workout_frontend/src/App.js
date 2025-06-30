@@ -75,26 +75,63 @@ function App() {
   const handleWeightChange = (e) => setWeight(e.target.value);
 
   // PUBLIC_INTERFACE
-  // Calculate recommendations based on height/weight (very simplified)
+  /**
+   * Generate an expanded set of exercise recommendations based on BMI and ranges.
+   * This includes a wider set of options for user engagement.
+   * Clearly displays more varied and purposeful exercise alternatives.
+   */
   function getRecommendations(h, w) {
-    // Just for demo: replace this with real logic if backend or more data
     let exerciseList = [];
     const weightNum = parseFloat(w);
     const heightNum = parseFloat(h);
     if (isNaN(heightNum) || isNaN(weightNum)) return [];
-    if (weightNum / (heightNum / 100) ** 2 >= 25) {
+    const bmi = weightNum / (heightNum / 100) ** 2;
+
+    if (bmi < 18.5) {
+      // Underweight: focus on gentle strength/stability/healthy weight gain
       exerciseList = [
         { name: "Brisk Walking", duration: "20 min" },
-        { name: "Bodyweight Squats", duration: "3 sets × 12 reps" },
-        { name: "Knee Push-ups", duration: "3 × 10 reps" }
+        { name: "Yoga (Beginner Flow)", duration: "15 min" },
+        { name: "Bodyweight Squats", duration: "3 sets × 10 reps" },
+        { name: "Standing Row (Resistance Band)", duration: "3 × 12 reps" },
+        { name: "Wall Push-ups", duration: "3 × 8 reps" },
+        { name: "Calf Raises", duration: "3 × 15 reps" }
       ];
-    } else {
+    } else if (bmi < 25) {
+      // Normal weight: a balanced routine for fitness/toning
       exerciseList = [
         { name: "Jumping Jacks", duration: "3 × 30s" },
         { name: "Lunges", duration: "3 × 12 reps" },
-        { name: "Plank", duration: "3 × 30s" }
+        { name: "Plank", duration: "3 × 30s" },
+        { name: "Burpees", duration: "3 × 8 reps" },
+        { name: "Mountain Climbers", duration: "3 × 30s" },
+        { name: "Push-ups", duration: "3 × 10 reps" },
+        { name: "Glute Bridge", duration: "3 × 12 reps" }
+      ];
+    } else if (bmi < 30) {
+      // Overweight: combine aerobic + low-impact/gentle strength
+      exerciseList = [
+        { name: "Brisk Walking", duration: "25 min" },
+        { name: "Low Impact Step Ups", duration: "3 × 15 reps" },
+        { name: "Seated Knee Extensions", duration: "3 × 15 reps" },
+        { name: "Bodyweight Squats", duration: "3 × 10 reps" },
+        { name: "Standing Side Leg Raise", duration: "3 × 12 reps each" },
+        { name: "Seated Bicep Curls (Band)", duration: "3 × 12 reps" },
+        { name: "Standing March", duration: "3 × 1 min" }
+      ];
+    } else {
+      // Obesity: focus on gradual, low-impact, accessible aerobic & mobility
+      exerciseList = [
+        { name: "Gentle Walking", duration: "15–30 min" },
+        { name: "Chair Squats", duration: "3 × 8 reps" },
+        { name: "Arm Circles", duration: "3 × 1 min" },
+        { name: "Seated March", duration: "3 × 1 min" },
+        { name: "Wall Push-ups", duration: "3 × 8 reps" },
+        { name: "Seated Leg Lifts", duration: "3 × 10 reps" },
+        { name: "Deep Breathing & Stretching", duration: "10 min" }
       ];
     }
+    // Encourage variety in displayed exercises
     return exerciseList;
   }
 
@@ -203,16 +240,27 @@ function App() {
           <div className="fitness-recommendations">
             <h2 className="section-title">Recommended Exercises</h2>
             {recommendations.length === 0 ? (
-              <div className="section-placeholder">Enter your stats to get a plan!</div>
+              <div className="section-placeholder">
+                Enter your height and weight to receive a personalized, detailed fitness routine!
+              </div>
             ) : (
-              <ul>
-                {recommendations.map((ex, i) => (
-                  <li key={i}>
-                    <span className="ex-name">{ex.name}</span>
-                    <span className="ex-duration">{ex.duration}</span>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <div style={{
+                  fontSize: "0.93em",
+                  color: "var(--text-secondary)",
+                  marginBottom: 8
+                }}>
+                  Here’s a wider selection of exercises tailored just for you — pick several each day, and try alternating!
+                </div>
+                <ul>
+                  {recommendations.map((ex, i) => (
+                    <li key={i}>
+                      <span className="ex-name">{ex.name}</span>
+                      <span className="ex-duration">{ex.duration}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
           </div>
           <div className="fitness-timer">
