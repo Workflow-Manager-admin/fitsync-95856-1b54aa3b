@@ -52,7 +52,7 @@ function Navbar() {
             </svg>
           </span>
           <span className="fitness-navbar__title">
-            Fitness Workout Planner
+            FitSync
           </span>
         </div>
       </div>
