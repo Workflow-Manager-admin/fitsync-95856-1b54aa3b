@@ -29,19 +29,26 @@
 */
 
 body, .App {
-  background: var(--bg-primary);
+  /* Enhanced modern, smooth background:
+     - Layered gradients: soft radial + clean linear blending palette, subtle, not distracting
+     - Responsive and visually harmonious with random shapes and content
+     - Works in both light and dark mode
+  */
   min-height: 100vh;
   color: var(--text-primary);
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   margin: 0;
   transition: background 0.3s, color 0.3s;
-  /* Subtle gradient overlay using accent and secondary color */
-  /* Extra fallback radial for non-supporting browsers; uses project palette */
   background:
-    radial-gradient(circle at 85% 12%, rgba(242,80,120,0.10) 0, rgba(255,255,255,0) 44%),
-    radial-gradient(circle at 10% 90%, rgba(147,140,133,0.09) 0, rgba(255,255,255,0) 50%),
-    linear-gradient(120deg, var(--bg-primary) 60%, var(--bg-secondary) 100%);
-  /* The base background color is still used by the gradient layers above */
+    /* Faint, wide radial accent behind - accent color for healthfulness */
+    radial-gradient(circle at 82% 10%, rgba(242,80,120, 0.13) 0%, rgba(255,255,255,0) 55%),
+    /* Muted radial for warmth - secondary color */
+    radial-gradient(circle at 12% 82%, rgba(147,140,133, 0.12) 0%, rgba(255,255,255,0) 62%),
+    /* Large radial for subtle depth - darken/soften (in dark mode uses bg-secondary) */
+    radial-gradient(ellipse at 48% 64%, rgba(0,0,0,0.04) 0%, rgba(255,255,255,0) 80%),
+    /* Main background linear gradient using palette for modern feel */
+    linear-gradient(112deg, var(--bg-primary) 58%, var(--bg-secondary) 100%);
+  /* Fallback color is still var(--bg-primary); gradient covers full area */
   position: relative;
   overflow-x: hidden;
 }
