@@ -21,6 +21,13 @@
   --shadow-main: 0 4px 24px rgba(0,0,0,0.55);
 }
 
+/* 
+  Modern, minimal background decorative elements: 
+  - Subtle gradient overlay
+  - Light abstract geometric accents and blurred shapes
+  - Responsive and health-focused (clean, not cluttered)
+*/
+
 body, .App {
   background: var(--bg-primary);
   min-height: 100vh;
@@ -28,6 +35,89 @@ body, .App {
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   margin: 0;
   transition: background 0.3s, color 0.3s;
+  /* Subtle gradient overlay using accent and secondary color */
+  /* Extra fallback radial for non-supporting browsers; uses project palette */
+  background:
+    radial-gradient(circle at 85% 12%, rgba(242,80,120,0.10) 0, rgba(255,255,255,0) 44%),
+    radial-gradient(circle at 10% 90%, rgba(147,140,133,0.09) 0, rgba(255,255,255,0) 50%),
+    linear-gradient(120deg, var(--bg-primary) 60%, var(--bg-secondary) 100%);
+  /* The base background color is still used by the gradient layers above */
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Abstract, blurred geometric shapes as background "accents" */
+.fitness-bg-accent {
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(32px);
+  opacity: 0.30;
+  /* Placeholders for color; "accent shapes" below will override as needed */
+  background: var(--accent-color);
+}
+
+/* Accent circles - use pseudo elements for minimal DOM overhead */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  border-radius: 50%;
+  mix-blend-mode: lighten;
+  pointer-events: none;
+  transition: opacity 0.7s;
+}
+
+/* Top right coral accent */
+body::before {
+  width: 340px;
+  height: 340px;
+  right: -120px;
+  top: -120px;
+  background: radial-gradient(circle at 32% 44%, rgba(242,80,120,0.33) 62%, rgba(255,255,255,0.0) 100%);
+  filter: blur(6px);
+  opacity: 0.16;
+}
+/* Bottom left taupe accent */
+body::after {
+  width: 280px;
+  height: 190px;
+  left: -80px;
+  bottom: -48px;
+  background: radial-gradient(circle at 66% 47%, rgba(147,140,133,0.18) 78%, rgba(255,255,255,0.0) 100%);
+  filter: blur(4px);
+  opacity: 0.13;
+}
+
+/* Responsive blur shapes: shrink on mobile for light touch */
+@media (max-width: 750px) {
+  body::before {
+    width: 170px; height: 170px; right: -54px; top: -54px; opacity: 0.13;
+  }
+  body::after  {
+    width: 100px; height: 85px; left: -32px; bottom: -24px; opacity: 0.09;
+  }
+}
+
+/* Optionally add a subtle grid or line accent for extra modernity */
+.fitness-bg-lines {
+  position: fixed;
+  z-index: 1;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  opacity: 0.13;
+  background:
+    repeating-linear-gradient(115deg, transparent, transparent 48px, var(--border-color) 50px, transparent 52px);
+  mix-blend-mode: screen;
+  display: none;
+}
+
+/* Only display lines on large desktop; keep background calm on mobile */
+@media (min-width: 1100px) {
+  .fitness-bg-lines { display: block; }
 }
 
 /* Top level container for central card layout */
