@@ -174,6 +174,126 @@ function App() {
     // Optionally perform validation here if submit is added later
   };
 
+  // PUBLIC_INTERFACE
+  /**
+   * Timer component with start, pause, and reset functionality.
+   * Displays elapsed time in MM:SS format.
+   * Placed adjacent to exercise recommendations.
+   */
+  function Timer() {
+    const [seconds, setSeconds] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+    const intervalRef = useRef(null);
+
+    // Start timer
+    const handleStart = () => {
+      setIsActive(true);
+    };
+
+    // Pause timer
+    const handlePause = () => {
+      setIsActive(false);
+    };
+
+    // Reset timer to 0
+    const handleReset = () => {
+      setIsActive(false);
+      setSeconds(0);
+    };
+
+    useEffect(() => {
+      if (isActive) {
+        intervalRef.current = setInterval(() => {
+          setSeconds((s) => s + 1);
+        }, 1000);
+      } else if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      };
+    }, [isActive]);
+
+    // Helper to format seconds -> MM:SS
+    const formatTime = (totalSeconds) => {
+      const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const s = String(totalSeconds % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    };
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.9rem" }}>
+        <span className="timer-placeholder" aria-live="polite" aria-atomic="true">
+          {formatTime(seconds)}
+        </span>
+        <div style={{ display: "flex", gap: "0.7rem" }}>
+          <button
+            className="btn"
+            style={{
+              background: "var(--button-bg)",
+              color: "var(--button-text)",
+              border: "none",
+              borderRadius: "7px",
+              padding: "8px 18px",
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              fontSize: "15px",
+              cursor: isActive ? "not-allowed" : "pointer",
+              opacity: isActive ? 0.7 : 1
+            }}
+            onClick={handleStart}
+            disabled={isActive}
+            aria-label="Start timer"
+            type="button"
+          >
+            Start
+          </button>
+          <button
+            className="btn"
+            style={{
+              background: "#ddd",
+              color: "#222",
+              border: "none",
+              borderRadius: "7px",
+              padding: "8px 18px",
+              fontWeight: 550,
+              fontSize: "15px",
+              cursor: isActive ? "pointer" : "not-allowed",
+              opacity: isActive ? 1 : 0.75
+            }}
+            onClick={handlePause}
+            disabled={!isActive}
+            aria-label="Pause timer"
+            type="button"
+          >
+            Pause
+          </button>
+          <button
+            className="btn"
+            style={{
+              background: "#e9ecef",
+              color: "#444",
+              border: "1px solid #ccc",
+              borderRadius: "7px",
+              padding: "8px 18px",
+              fontWeight: 500,
+              fontSize: "15px",
+              cursor: "pointer"
+            }}
+            onClick={handleReset}
+            aria-label="Reset timer"
+            type="button"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="App">
       <button
@@ -240,8 +360,10 @@ function App() {
           </div>
           <div className="workout-timer">
             <h3>Workout Timer</h3>
-            {/* Timer logic to be added */}
-            <p className="timer-placeholder">00:00</p>
+            {/* PUBLIC_INTERFACE
+              Workout timer with start, pause, and reset. Timer continues until paused or reset.
+            */}
+            <Timer />
           </div>
         </div>
         {/* Webcam Display */}
