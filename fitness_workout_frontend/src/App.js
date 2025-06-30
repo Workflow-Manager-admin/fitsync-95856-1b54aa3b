@@ -4,10 +4,20 @@ import './App.css';
 // PUBLIC_INTERFACE
 function App() {
   const [theme, setTheme] = useState('light');
+  // Height and weight are stored as strings for controlled inputs
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
+  // Validation error states
+  const [heightError, setHeightError] = useState('');
+  const [weightError, setWeightError] = useState('');
   const [videoError, setVideoError] = useState('');
   const videoRef = useRef(null);
+
+  // Validation constraints
+  const HEIGHT_MIN = 50;
+  const HEIGHT_MAX = 250;
+  const WEIGHT_MIN = 20;
+  const WEIGHT_MAX = 300;
 
   // Effect to apply theme to document element
   useEffect(() => {
@@ -41,13 +51,59 @@ function App() {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   };
 
-  // Placeholder for recommendations and timer until further logic is added
+  // Validate height on change
+  const handleHeightChange = (e) => {
+    const value = e.target.value;
+    setHeight(value);
+
+    if (value === '') {
+      setHeightError('Height is required.');
+    } else {
+      const num = Number(value);
+      if (isNaN(num)) {
+        setHeightError('Height must be a number.');
+      } else if (num < HEIGHT_MIN || num > HEIGHT_MAX) {
+        setHeightError(`Height must be between ${HEIGHT_MIN} and ${HEIGHT_MAX} cm.`);
+      } else {
+        setHeightError('');
+      }
+    }
+  };
+
+  // Validate weight on change
+  const handleWeightChange = (e) => {
+    const value = e.target.value;
+    setWeight(value);
+
+    if (value === '') {
+      setWeightError('Weight is required.');
+    } else {
+      const num = Number(value);
+      if (isNaN(num)) {
+        setWeightError('Weight must be a number.');
+      } else if (num < WEIGHT_MIN || num > WEIGHT_MAX) {
+        setWeightError(`Weight must be between ${WEIGHT_MIN} and ${WEIGHT_MAX} kg.`);
+      } else {
+        setWeightError('');
+      }
+    }
+  };
+
+  // Recommendations respond to validation or required fields
+  // PUBLIC_INTERFACE
   const getRecommendations = () => {
-    if (!height || !weight) {
+    if (!height || !weight || heightError || weightError) {
       return "Fill in your height & weight for recommendations.";
     }
     // Demo logic for exercise recommendation (to be replaced)
     return "Recommended: 10 Push-Ups, 15 Squats, 20-sec Plank";
+  };
+
+  // PUBLIC_INTERFACE
+  // Submit can be added in the future, for now, block submit (preventDefault)
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    // Optionally perform validation here if submit is added later
   };
 
   return (
@@ -63,30 +119,46 @@ function App() {
         {/* Centered Input Form */}
         <div className="form-section">
           <h2 className="section-title">Enter Your Details</h2>
-          <form className="input-form" onSubmit={e => e.preventDefault()}>
+          <form className="input-form" onSubmit={handleFormSubmit} noValidate>
             <label>
               Height (cm)
               <input
                 type="number"
-                min="50"
-                max="250"
+                min={HEIGHT_MIN}
+                max={HEIGHT_MAX}
                 inputMode="numeric"
                 value={height}
-                onChange={e => setHeight(e.target.value)}
+                onChange={handleHeightChange}
                 placeholder="e.g. 170"
+                required
+                aria-invalid={!!heightError}
+                aria-describedby="height-error"
               />
+              {heightError && (
+                <span style={{ color: "#c43d4a", fontSize: "0.96em", marginTop: "2px" }} id="height-error" role="alert">
+                  {heightError}
+                </span>
+              )}
             </label>
             <label>
               Weight (kg)
               <input
                 type="number"
-                min="20"
-                max="300"
+                min={WEIGHT_MIN}
+                max={WEIGHT_MAX}
                 inputMode="numeric"
                 value={weight}
-                onChange={e => setWeight(e.target.value)}
+                onChange={handleWeightChange}
                 placeholder="e.g. 65"
+                required
+                aria-invalid={!!weightError}
+                aria-describedby="weight-error"
               />
+              {weightError && (
+                <span style={{ color: "#c43d4a", fontSize: "0.96em", marginTop: "2px" }} id="weight-error" role="alert">
+                  {weightError}
+                </span>
+              )}
             </label>
           </form>
         </div>
