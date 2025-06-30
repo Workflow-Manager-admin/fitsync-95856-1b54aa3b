@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
+import Navbar from "./Navbar";
+import "./Navbar.css";
 
 /**
  * PUBLIC_INTERFACE
@@ -183,6 +185,7 @@ function App() {
   // Render
   return (
     <div className="fitness-app-root App">
+      <Navbar />
       <button
         className="theme-toggle"
         onClick={toggleTheme}
