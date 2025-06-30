@@ -29,10 +29,10 @@
 */
 
 body, .App {
-  /* Enhanced modern, smooth background:
-     - Layered gradients: soft radial + clean linear blending palette, subtle, not distracting
-     - Responsive and visually harmonious with random shapes and content
-     - Works in both light and dark mode
+  /* Visibly enhanced modern background:
+     - More vibrant, bolder gradients
+     - Greater chromatic depth & shape separation
+     - Maintains harmony, avoids overwhelming
   */
   min-height: 100vh;
   color: var(--text-primary);
@@ -40,14 +40,14 @@ body, .App {
   margin: 0;
   transition: background 0.3s, color 0.3s;
   background:
-    /* Faint, wide radial accent behind - accent color for healthfulness */
-    radial-gradient(circle at 82% 10%, rgba(242,80,120, 0.13) 0%, rgba(255,255,255,0) 55%),
-    /* Muted radial for warmth - secondary color */
-    radial-gradient(circle at 12% 82%, rgba(147,140,133, 0.12) 0%, rgba(255,255,255,0) 62%),
-    /* Large radial for subtle depth - darken/soften (in dark mode uses bg-secondary) */
-    radial-gradient(ellipse at 48% 64%, rgba(0,0,0,0.04) 0%, rgba(255,255,255,0) 80%),
-    /* Main background linear gradient using palette for modern feel */
-    linear-gradient(112deg, var(--bg-primary) 58%, var(--bg-secondary) 100%);
+    /* Brighter accent radial - pink coral top right */
+    radial-gradient(circle at 82% 5%, rgba(242,80,120, 0.34) 0%, rgba(242,80,120, 0.18) 28%, rgba(242,80,120,0.05) 60%, rgba(255,255,255,0) 88%),
+    /* Warmer taupe secondary radial, more visible */
+    radial-gradient(circle at 10% 94%, rgba(147,140,133, 0.26) 0%, rgba(147,140,133, .09) 46%, rgba(255,255,255,0) 87%),
+    /* High-contrast dark vignette for subtle depth (visible in light/dark) */
+    radial-gradient(ellipse at 47% 72%, rgba(34,36,44,0.10) 0%, rgba(34,36,44,0.03) 57%, rgba(255,255,255,0) 93%),
+    /* Bold linear main gradient: deeper color stops with accent edge */
+    linear-gradient(106deg, var(--bg-primary) 0%, #fff4fc 28%, #ffe3ea 56%, var(--bg-secondary) 84%, #e87a41 100%);
   /* Fallback color is still var(--bg-primary); gradient covers full area */
   position: relative;
   overflow-x: hidden;
