@@ -91,12 +91,80 @@ function App() {
 
   // Recommendations respond to validation or required fields
   // PUBLIC_INTERFACE
+  /**
+   * Returns a personalized exercise recommendation string based on height and weight.
+   * Basic ruleset:
+   *  - BMI < 18.5: focus on bodyweight strength, no excessive cardio
+   *  - BMI 18.5-25: balanced (push-ups, squats, plank)
+   *  - BMI 25-30: start with mix of strength & light cardio
+   *  - BMI > 30: prioritize low-impact, high-rep, safety
+   */
   const getRecommendations = () => {
     if (!height || !weight || heightError || weightError) {
       return "Fill in your height & weight for recommendations.";
     }
-    // Demo logic for exercise recommendation (to be replaced)
-    return "Recommended: 10 Push-Ups, 15 Squats, 20-sec Plank";
+    const h = Number(height);
+    const w = Number(weight);
+    if (isNaN(h) || isNaN(w) || h < HEIGHT_MIN || h > HEIGHT_MAX || w < WEIGHT_MIN || w > WEIGHT_MAX) {
+      return "Enter valid height & weight for recommendations.";
+    }
+    // Calculate BMI: weight (kg) / (height (m))^2
+    const bmi = w / ((h / 100) ** 2);
+    let exercises;
+    if (bmi < 18.5) {
+      exercises = [
+        "12 Push-Ups",
+        "18 Squats",
+        "30-sec Plank",
+        "Light Yoga/Stretching"
+      ];
+      return (
+        <>
+          <strong>Goal:</strong> Build Strength & Mass<br />
+          {exercises.map((ex, idx) => (<div key={idx}>• {ex}</div>))}
+        </>
+      );
+    } else if (bmi >= 18.5 && bmi < 25) {
+      exercises = [
+        "15 Push-Ups",
+        "20 Squats",
+        "40-sec Plank",
+        "15 Jumping Jacks"
+      ];
+      return (
+        <>
+          <strong>Goal:</strong> Balanced Fitness<br />
+          {exercises.map((ex, idx) => (<div key={idx}>• {ex}</div>))}
+        </>
+      );
+    } else if (bmi >= 25 && bmi < 30) {
+      exercises = [
+        "10 Push-Ups",
+        "16 Squats",
+        "25-sec Plank",
+        "20 Low-Impact Step-Ups",
+        "30-sec Fast Walk in Place"
+      ];
+      return (
+        <>
+          <strong>Goal:</strong> Mix Cardio & Strength<br />
+          {exercises.map((ex, idx) => (<div key={idx}>• {ex}</div>))}
+        </>
+      );
+    } else {
+      exercises = [
+        "8 Chair Squats",
+        "20-sec Wall Push-Ups",
+        "40-sec Standing March",
+        "30-sec Seated Knee Raises"
+      ];
+      return (
+        <>
+          <strong>Goal:</strong> Focus on Low-Impact, Safe Movements<br />
+          {exercises.map((ex, idx) => (<div key={idx}>• {ex}</div>))}
+        </>
+      );
+    }
   };
 
   // PUBLIC_INTERFACE
