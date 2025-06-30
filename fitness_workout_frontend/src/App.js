@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
-// PUBLIC_INTERFACE
+/**
+ * App component for Fitness Workout Frontend.
+ * Manages user input for height/weight, personalized recommendations,
+ * workout timer logic, and webcam feed, styled in modern, minimal fashion.
+ */
 function App() {
   const [theme, setTheme] = useState('light');
-  // Height and weight are stored as strings for controlled inputs
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
-  // Validation error states
   const [heightError, setHeightError] = useState('');
   const [weightError, setWeightError] = useState('');
   const [videoError, setVideoError] = useState('');
   const videoRef = useRef(null);
+
+  // Workout timer state
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [timerActive, setTimerActive] = useState(false);
+  const timerIntervalRef = useRef(null);
 
   // Validation constraints
   const HEIGHT_MIN = 50;
@@ -19,12 +26,12 @@ function App() {
   const WEIGHT_MIN = 20;
   const WEIGHT_MAX = 300;
 
-  // Effect to apply theme to document element
+  // Effect to apply theme
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Access the webcam stream
+  // Webcam stream logic
   useEffect(() => {
     const getVideo = async () => {
       if (videoRef.current) {
@@ -38,7 +45,6 @@ function App() {
     };
     getVideo();
     return () => {
-      // Cleanup video stream on unmount
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
         tracks.forEach(track => track.stop());
@@ -46,50 +52,57 @@ function App() {
     };
   }, []);
 
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  // Timer effect for start/pause functionality
+  useEffect(() => {
+    if (timerActive) {
+      timerIntervalRef.current = setInterval(() => {
+        setTimerSeconds(prev => prev + 1);
+      }, 1000);
+    } else if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, [timerActive]);
 
-  // Validate height on change
+  // Theme toggler (light/dark)
+  // PUBLIC_INTERFACE
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
+
+  // Controlled input for height validation
   const handleHeightChange = (e) => {
     const value = e.target.value;
     setHeight(value);
-
     if (value === '') {
       setHeightError('Height is required.');
     } else {
       const num = Number(value);
-      if (isNaN(num)) {
-        setHeightError('Height must be a number.');
-      } else if (num < HEIGHT_MIN || num > HEIGHT_MAX) {
+      if (isNaN(num)) setHeightError('Height must be a number.');
+      else if (num < HEIGHT_MIN || num > HEIGHT_MAX)
         setHeightError(`Height must be between ${HEIGHT_MIN} and ${HEIGHT_MAX} cm.`);
-      } else {
-        setHeightError('');
-      }
+      else setHeightError('');
     }
   };
 
-  // Validate weight on change
+  // Controlled input for weight validation
   const handleWeightChange = (e) => {
     const value = e.target.value;
     setWeight(value);
-
     if (value === '') {
       setWeightError('Weight is required.');
     } else {
       const num = Number(value);
-      if (isNaN(num)) {
-        setWeightError('Weight must be a number.');
-      } else if (num < WEIGHT_MIN || num > WEIGHT_MAX) {
+      if (isNaN(num)) setWeightError('Weight must be a number.');
+      else if (num < WEIGHT_MIN || num > WEIGHT_MAX)
         setWeightError(`Weight must be between ${WEIGHT_MIN} and ${WEIGHT_MAX} kg.`);
-      } else {
-        setWeightError('');
-      }
+      else setWeightError('');
     }
   };
 
-  // Recommendations respond to validation or required fields
   // PUBLIC_INTERFACE
   /**
    * Returns a personalized exercise recommendation string based on height and weight.
@@ -105,10 +118,16 @@ function App() {
     }
     const h = Number(height);
     const w = Number(weight);
-    if (isNaN(h) || isNaN(w) || h < HEIGHT_MIN || h > HEIGHT_MAX || w < WEIGHT_MIN || w > WEIGHT_MAX) {
+    if (
+      isNaN(h) ||
+      isNaN(w) ||
+      h < HEIGHT_MIN ||
+      h > HEIGHT_MAX ||
+      w < WEIGHT_MIN ||
+      w > WEIGHT_MAX
+    ) {
       return "Enter valid height & weight for recommendations.";
     }
-    // Calculate BMI: weight (kg) / (height (m))^2
     const bmi = w / ((h / 100) ** 2);
     let exercises;
     if (bmi < 18.5) {
@@ -124,7 +143,7 @@ function App() {
           {exercises.map((ex, idx) => (<div key={idx}>• {ex}</div>))}
         </>
       );
-    } else if (bmi >= 18.5 && bmi < 25) {
+    } else if (bmi < 25) {
       exercises = [
         "15 Push-Ups",
         "20 Squats",
@@ -137,7 +156,7 @@ function App() {
           {exercises.map((ex, idx) => (<div key={idx}>• {ex}</div>))}
         </>
       );
-    } else if (bmi >= 25 && bmi < 30) {
+    } else if (bmi < 30) {
       exercises = [
         "10 Push-Ups",
         "16 Squats",
@@ -167,132 +186,42 @@ function App() {
     }
   };
 
+  // Prevent submit for now, enable in future if form is used for more
   // PUBLIC_INTERFACE
-  // Submit can be added in the future, for now, block submit (preventDefault)
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // Optionally perform validation here if submit is added later
   };
 
   // PUBLIC_INTERFACE
   /**
-   * Timer component with start, pause, and reset functionality.
-   * Displays elapsed time in MM:SS format.
-   * Placed adjacent to exercise recommendations.
+   * Formats seconds to MM:SS (example: 08:47 for 8 min 47 sec)
    */
-  function Timer() {
-    const [seconds, setSeconds] = useState(0);
-    const [isActive, setIsActive] = useState(false);
-    const intervalRef = useRef(null);
+  const formatTime = (totalSeconds) => {
+    const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+    const s = String(totalSeconds % 60).padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
-    // Start timer
-    const handleStart = () => {
-      setIsActive(true);
-    };
+  // PUBLIC_INTERFACE
+  /**
+   * Start the workout timer
+   */
+  const handleTimerStart = () => setTimerActive(true);
 
-    // Pause timer
-    const handlePause = () => {
-      setIsActive(false);
-    };
+  // PUBLIC_INTERFACE
+  /**
+   * Pause the workout timer
+   */
+  const handleTimerPause = () => setTimerActive(false);
 
-    // Reset timer to 0
-    const handleReset = () => {
-      setIsActive(false);
-      setSeconds(0);
-    };
-
-    useEffect(() => {
-      if (isActive) {
-        intervalRef.current = setInterval(() => {
-          setSeconds((s) => s + 1);
-        }, 1000);
-      } else if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return () => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      };
-    }, [isActive]);
-
-    // Helper to format seconds -> MM:SS
-    const formatTime = (totalSeconds) => {
-      const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-      const s = String(totalSeconds % 60).padStart(2, '0');
-      return `${m}:${s}`;
-    };
-
-    return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.9rem" }}>
-        <span className="timer-placeholder" aria-live="polite" aria-atomic="true">
-          {formatTime(seconds)}
-        </span>
-        <div style={{ display: "flex", gap: "0.7rem" }}>
-          <button
-            className="btn"
-            style={{
-              background: "var(--button-bg)",
-              color: "var(--button-text)",
-              border: "none",
-              borderRadius: "7px",
-              padding: "8px 18px",
-              fontWeight: 600,
-              letterSpacing: "0.02em",
-              fontSize: "15px",
-              cursor: isActive ? "not-allowed" : "pointer",
-              opacity: isActive ? 0.7 : 1
-            }}
-            onClick={handleStart}
-            disabled={isActive}
-            aria-label="Start timer"
-            type="button"
-          >
-            Start
-          </button>
-          <button
-            className="btn"
-            style={{
-              background: "#ddd",
-              color: "#222",
-              border: "none",
-              borderRadius: "7px",
-              padding: "8px 18px",
-              fontWeight: 550,
-              fontSize: "15px",
-              cursor: isActive ? "pointer" : "not-allowed",
-              opacity: isActive ? 1 : 0.75
-            }}
-            onClick={handlePause}
-            disabled={!isActive}
-            aria-label="Pause timer"
-            type="button"
-          >
-            Pause
-          </button>
-          <button
-            className="btn"
-            style={{
-              background: "#e9ecef",
-              color: "#444",
-              border: "1px solid #ccc",
-              borderRadius: "7px",
-              padding: "8px 18px",
-              fontWeight: 500,
-              fontSize: "15px",
-              cursor: "pointer"
-            }}
-            onClick={handleReset}
-            aria-label="Reset timer"
-            type="button"
-          >
-            Reset
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // PUBLIC_INTERFACE
+  /**
+   * Reset the workout timer to zero
+   */
+  const handleTimerReset = () => {
+    setTimerActive(false);
+    setTimerSeconds(0);
+  };
 
   return (
     <div className="App">
@@ -360,10 +289,73 @@ function App() {
           </div>
           <div className="workout-timer">
             <h3>Workout Timer</h3>
-            {/* PUBLIC_INTERFACE
-              Workout timer with start, pause, and reset. Timer continues until paused or reset.
-            */}
-            <Timer />
+            {/* Inline workout timer UI using App-level state and handlers */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.9rem" }}>
+              <span className="timer-placeholder" aria-live="polite" aria-atomic="true">
+                {formatTime(timerSeconds)}
+              </span>
+              <div style={{ display: "flex", gap: "0.7rem" }}>
+                <button
+                  className="btn"
+                  style={{
+                    background: "var(--button-bg)",
+                    color: "var(--button-text)",
+                    border: "none",
+                    borderRadius: "7px",
+                    padding: "8px 18px",
+                    fontWeight: 600,
+                    letterSpacing: "0.02em",
+                    fontSize: "15px",
+                    cursor: timerActive ? "not-allowed" : "pointer",
+                    opacity: timerActive ? 0.7 : 1
+                  }}
+                  onClick={handleTimerStart}
+                  disabled={timerActive}
+                  aria-label="Start timer"
+                  type="button"
+                >
+                  Start
+                </button>
+                <button
+                  className="btn"
+                  style={{
+                    background: "#ddd",
+                    color: "#222",
+                    border: "none",
+                    borderRadius: "7px",
+                    padding: "8px 18px",
+                    fontWeight: 550,
+                    fontSize: "15px",
+                    cursor: timerActive ? "pointer" : "not-allowed",
+                    opacity: timerActive ? 1 : 0.75
+                  }}
+                  onClick={handleTimerPause}
+                  disabled={!timerActive}
+                  aria-label="Pause timer"
+                  type="button"
+                >
+                  Pause
+                </button>
+                <button
+                  className="btn"
+                  style={{
+                    background: "#e9ecef",
+                    color: "#444",
+                    border: "1px solid #ccc",
+                    borderRadius: "7px",
+                    padding: "8px 18px",
+                    fontWeight: 500,
+                    fontSize: "15px",
+                    cursor: "pointer"
+                  }}
+                  onClick={handleTimerReset}
+                  aria-label="Reset timer"
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         {/* Webcam Display */}
