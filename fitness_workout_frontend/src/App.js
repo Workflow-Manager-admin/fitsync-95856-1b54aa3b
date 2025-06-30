@@ -31,24 +31,42 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Webcam stream logic
+  // PUBLIC_INTERFACE
+  /**
+   * Initializes and manages the webcam video stream using getUserMedia.
+   * Ensures accessibility and stops tracks on cleanup.
+   */
   useEffect(() => {
-    const getVideo = async () => {
-      if (videoRef.current) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    let activeStream;
+    const startWebcam = async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setVideoError("Webcam not supported on this device.");
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        activeStream = stream;
+        if (videoRef.current) {
           videoRef.current.srcObject = stream;
-        } catch (err) {
-          setVideoError("Unable to access webcam.");
+        }
+        setVideoError("");
+      } catch (err) {
+        setVideoError("Unable to access webcam. Make sure your browser allows camera access.");
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
         }
       }
     };
-    getVideo();
+    startWebcam();
+
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
+      if (activeStream) {
+        activeStream.getTracks().forEach(track => track.stop());
+      } else if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
         tracks.forEach(track => track.stop());
       }
+      if (videoRef.current) videoRef.current.srcObject = null;
     };
   }, []);
 
