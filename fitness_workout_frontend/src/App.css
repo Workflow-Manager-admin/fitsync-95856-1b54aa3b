@@ -2,7 +2,7 @@
   /* App color palette */
   --primary-color: #000000;
   --secondary-color: #938c85;
-  --accent-color: #f25078;
+  --accent-color: #2196f3;
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --text-primary: #282c34;
@@ -40,14 +40,14 @@ body, .App {
   margin: 0;
   transition: background 0.3s, color 0.3s;
   background:
-    /* Brighter accent radial - pink coral top right */
-    radial-gradient(circle at 82% 5%, rgba(242,80,120, 0.34) 0%, rgba(242,80,120, 0.18) 28%, rgba(242,80,120,0.05) 60%, rgba(255,255,255,0) 88%),
+    /* Brighter accent radial - blue top right */
+    radial-gradient(circle at 82% 5%, rgba(33,150,243, 0.34) 0%, rgba(33,150,243, 0.18) 28%, rgba(33,150,243,0.05) 60%, rgba(255,255,255,0) 88%),
     /* Warmer taupe secondary radial, more visible */
     radial-gradient(circle at 10% 94%, rgba(147,140,133, 0.26) 0%, rgba(147,140,133, .09) 46%, rgba(255,255,255,0) 87%),
     /* High-contrast dark vignette for subtle depth (visible in light/dark) */
     radial-gradient(ellipse at 47% 72%, rgba(34,36,44,0.10) 0%, rgba(34,36,44,0.03) 57%, rgba(255,255,255,0) 93%),
     /* Bold linear main gradient: deeper color stops with accent edge */
-    linear-gradient(106deg, var(--bg-primary) 0%, #fff4fc 28%, #ffe3ea 56%, var(--bg-secondary) 84%, #e87a41 100%);
+    linear-gradient(106deg, var(--bg-primary) 0%, #e3f2fd 28%, #bbdefb 56%, var(--bg-secondary) 84%, #e87a41 100%);
   /* Fallback color is still var(--bg-primary); gradient covers full area */
   position: relative;
   overflow-x: hidden;
@@ -83,7 +83,7 @@ body::before {
   height: 340px;
   right: -120px;
   top: -120px;
-  background: radial-gradient(circle at 32% 44%, rgba(242,80,120,0.33) 62%, rgba(255,255,255,0.0) 100%);
+  background: radial-gradient(circle at 32% 44%, rgba(33,150,243,0.33) 62%, rgba(255,255,255,0.0) 100%);
   filter: blur(6px);
   opacity: 0.16;
 }
@@ -250,6 +250,7 @@ body::after {
 .fitness-btn.accent {
   background: var(--accent-color);
   color: #fff;
+  /* ensure high contrast for the blue */
 }
 .fitness-btn.secondary {
   background: var(--secondary-color);
@@ -399,13 +400,13 @@ body::after {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(41, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(33, 150, 243, 0.10);
   z-index: 10;
 }
 .theme-toggle:hover {
   transform: translateY(-2px);
   filter: brightness(1.09);
-  box-shadow: 0 4px 8px rgba(41, 0, 0, 0.12);
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.16);
 }
 .theme-toggle:active {
   opacity: 0.91;

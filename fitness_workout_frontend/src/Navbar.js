@@ -28,7 +28,7 @@ function Navbar() {
                 width="6"
                 height="28"
                 rx="3"
-                fill="var(--accent-color, #f25078)"
+                fill="var(--accent-color, #2196f3)"
                 />
               <rect
                 x="6"
@@ -36,7 +36,7 @@ function Navbar() {
                 width="28"
                 height="6"
                 rx="3"
-                fill="var(--accent-color, #f25078)"
+                fill="var(--accent-color, #2196f3)"
                 />
               {/* Optional: thin outline for modernity */}
               <rect

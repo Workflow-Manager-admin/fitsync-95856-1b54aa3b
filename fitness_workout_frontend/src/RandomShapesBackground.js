@@ -89,7 +89,7 @@ function generateBlobPath(x, y, size, seed) {
 }
 
 const COLOR_PALETTE = [
-  "var(--accent-color)",
+  "var(--accent-color)", // now resolves to #2196f3
   "var(--secondary-color)",
   "var(--primary-color)",
 ];
